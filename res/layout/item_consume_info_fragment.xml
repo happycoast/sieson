@@ -1,0 +1,58 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/finacial_info_padding"
+    android:paddingTop="@dimen/finacial_info_padding" >
+
+    <TextView
+        android:id="@+id/financial_data_item_tv_order_num"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="12"
+        android:text="20160202153411961547"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/financial_data_item_tv_order_date"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="10"
+        android:text="2016-02-02 15:34:11"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/financial_data_item_tv_paycount"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="5"
+        android:text="￥119.00"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/financial_data_item_tv_consume_name"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:text="程咬金"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/financial_data_item_tv_consume_phone"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="7"
+        android:text="18627028991"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/financial_data_item_tv_status"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:text="未付款"
+        android:textSize="12sp" />
+
+</LinearLayout>

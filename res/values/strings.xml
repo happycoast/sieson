@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">丝颂消费结算系统</string>
+    <string name="copyright">CopyRight 2011-2016 Sieson.com</string>
+    <string name="app_id">571b79f6</string>
+    <string name="name_fxs">发型师</string>
+    <string name="name_trs">烫染师</string>
+    <string name="name_zl">助理</string>
+    <string name="name_hjgw">会籍顾问</string>
+    <string name="name_tpds">头皮导师</string>
+    
+    <string-array name="member_validate_status">
+        <item ></item>
+    </string-array>
+    <string-array name="order_status">
+        <item >已取消</item>
+        <item >待验证</item>
+        <item >待服务</item>
+        <item >待评价</item>
+        <item >已评价</item>
+        <item ></item>
+        <item >拼单中 </item>
+        <item >退款中</item>
+        <item >已退款</item>
+    </string-array>
+</resources>

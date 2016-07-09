@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="logo_margin_top">5dp</dimen>
+    <dimen name="logo_margin_buttom">5dp</dimen>
+    <dimen name="logo_height">40dp</dimen>
+    <!-- main_activity -->
+    <dimen name="main_edit_width">200dp</dimen>
+    <dimen name="main_edit_textsize">14sp</dimen>
+    <dimen name="main_edit_padding">2dp</dimen>
+    <dimen name="main_scan_width">16dp</dimen>
+    <dimen name="num_pad_margin_top">5dp</dimen>
+    <dimen name="num_width">66dp</dimen>
+    <dimen name="num_height">42dp</dimen>
+    <dimen name="num_between_margin">2dp</dimen>
+    <dimen name="main_copyright_margin_buttom">21dp</dimen>
+    <dimen name="main_buttomview_margin_buttom">15dp</dimen>
+    <dimen name="main_buttomview_button_padding_top">5dp</dimen>
+    <dimen name="main_buttomview_button_padding_left">10dp</dimen>
+    <dimen name="main_buttom_image_width">14dp</dimen>
+    <!-- consume_activity -->
+    <dimen name="consume_main_padding">5dp</dimen>
+    <dimen name="consume_contant_padding">3dp</dimen>
+    <dimen name="consume_consume_item_padding">6dp</dimen>
+    <dimen name="consume_consume_waiter_img_width">58dp</dimen>
+    <!-- dialog_deposit_activity -->
+    <dimen name="dialog_deposit_main_padding">6dp</dimen>
+    <dimen name="dialog_deposit_info_item_padding">5dp</dimen>
+    <dimen name="dialog_deposit_comfire_margin_top">10dp</dimen>
+    <!-- finacial_activity -->
+    <dimen name="finacial_counter_info_width">300dp</dimen>
+    <dimen name="finacial_counter_info_padding_top">2dp</dimen>
+    <dimen name="finacial_counter_info_padding_left">4dp</dimen>
+    <dimen name="finacial_counter_info_textsize">12sp</dimen>
+    <dimen name="finacial_info_padding">4dp</dimen>
+    <dimen name="finacial_info_title_padding">2dp</dimen>
+</resources>
