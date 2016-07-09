@@ -14,7 +14,7 @@ public class User implements Serializable{
 	private String username;
 	// 脸部照片
 	private transient Bitmap facePic;
-	// 是否已注册
+	// 是否已注册//
 	private boolean isEnrolled;
 	// 是否已登录
 	private boolean isLogined;
