@@ -20,6 +20,7 @@ import com.xigu.siesonfinancial.service.SiesonService;
 import com.xigu.siesonfinancial.view.ConsumeListInfoAdapter;
 import com.xigu.siesonfinancial.view.WaiterListAdapter;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -31,14 +32,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -79,6 +85,8 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 	private static final int POS_ZL = 2;
 	private static final int POS_HJGW = 3;
 	private static final int POS_TPDS = 4;
+    private static final long DIALOG_IMAGE_SHOW_TIME = 618;
+	private ArrayList<JSONObject> mAllUidList = new ArrayList<JSONObject>();
 	private ArrayList<JSONObject> mFxsUidList = new ArrayList<JSONObject>();
 	private ArrayList<JSONObject> mTrsUidList = new ArrayList<JSONObject>();
 	private ArrayList<JSONObject> mZlUidList = new ArrayList<JSONObject>();
@@ -105,12 +113,17 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 			if (SiesonService.ACTION_COMFIREM_BUY_RESULT.equals(intent.getAction())) {
 				handleComfirmBuyResult(intent);
 			}
+			if (SiesonService.ACTION_GET_WAITER_RESULT.equals(intent.getAction())) {
+				handleGetWaiterResult(intent);
+			}
 		}
 	};
 	private Options decodingOptions = new Options();
 	private DisplayImageOptions options;
 	private String mOid = "";
 	private String mCode = "";
+	private boolean isNeedValidateFace;
+	protected String mSelectedWaiterUid;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +132,8 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 		if (null != getIntent()) {
 			IntentFilter intentFilter = new IntentFilter();
 			intentFilter.addAction(SiesonService.ACTION_GET_ORDER_RESULT);
+			intentFilter.addAction(SiesonService.ACTION_COMFIREM_BUY_RESULT);
+			intentFilter.addAction(SiesonService.ACTION_GET_WAITER_RESULT);
 			registerReceiver(mReceiver, intentFilter);
 
 			Intent intent = new Intent();
@@ -130,7 +145,7 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 		initeviews();
 	}
 
-	protected void handleComfirmBuyResult(Intent intent) {
+	protected void handleGetWaiterResult(Intent intent) {
 		String result = intent.getStringExtra("result");
 		JSONObject resultJsonObject = null;
 		try {
@@ -143,9 +158,39 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 		}
 		Log.d(TAG, result);
 		try {
-			Toast.makeText(this, resultJsonObject.getString("message"), Toast.LENGTH_SHORT).show();
 			if(0 == resultJsonObject.getInt("status")){
-				finish();
+				if (isNeedValidateFace) {
+					startTakePic();
+				}
+			}else{
+				Toast.makeText(this, resultJsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void handleComfirmBuyResult(Intent intent) {
+		String result = intent.getStringExtra("result");
+		JSONObject resultJsonObject = null;
+		if(null != dialog){
+			dialog.dismiss();
+			dialog = null;
+		}
+		try {
+			resultJsonObject = new JSONObject(result);
+		} catch (Exception e) {
+			Log.e(TAG, "转换Json异常  : " + result);
+		}
+		if (null == resultJsonObject) {
+			return;
+		}
+		Log.d(TAG, result);
+		try {
+			if(0 == resultJsonObject.getInt("status")){
+				showSuccess();
+			}else{
+				Toast.makeText(this, resultJsonObject.getString("message"), Toast.LENGTH_SHORT).show();
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -153,6 +198,39 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 	
 		
 	}
+
+	private void showSuccess() {
+        ObjectAnimator animator = new ObjectAnimator();
+        AlertDialog.Builder builder = new Builder(this);
+        final AlertDialog alertDialog = builder.create();
+        ImageView imageView = new ImageView(this);
+        imageView.measure(getResources().getDrawable(R.drawable.success).getIntrinsicWidth(),
+                getResources().getDrawable(R.drawable.success).getIntrinsicHeight());
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true ;
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.success, options);
+        imageView.setImageResource(R.drawable.success);
+        animator.ofFloat(imageView, "scaleX", 0.0f, 1.0f).setDuration(DIALOG_IMAGE_SHOW_TIME).start();
+        animator.ofFloat(imageView, "scaleY", 0.0f, 1.0f).setDuration(DIALOG_IMAGE_SHOW_TIME).start();
+        animator.ofFloat(imageView, "alpha", 0.0f, 1.0f).setDuration(DIALOG_IMAGE_SHOW_TIME).start();
+        alertDialog.show();
+        Window window = alertDialog.getWindow();
+        window.setContentView(imageView);
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        WindowManager.LayoutParams p = window.getAttributes(); // 获取对话框当前的参数值
+        p.height = (int) (options.outHeight * 3); // 高度设置为屏幕的0.6
+        p.width = (int) (options.outWidth * 3); // 宽度设置为屏幕的0.65
+        window.setAttributes(p);
+        imageView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                alertDialog.dismiss();
+                setResult(RESULT_OK);
+                finish();
+            }
+        }, DIALOG_IMAGE_SHOW_TIME*3) ;
+    }
 
 	private void handleGetOrderResult(Intent intent) {
 		String result = intent.getStringExtra("result");
@@ -185,9 +263,60 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 
 			JSONObject fsxInfo = jsondata.getJSONObject("fxs_info");
 			initUidLists(fsxInfo);
-			if (1 == jsondata.getInt("face")) {
-				mVipUid = jsondata.getJSONObject("vip_info").getString("vip_uid");
-				startTakePic();
+			// 选择销售人员
+			// 0 弹窗选择销售人员；1不弹
+			mVipUid = jsondata.getJSONObject("vip_info").getString("vip_uid");
+			isNeedValidateFace = 1 == jsondata.getInt("face");
+			if(1 == jsondata.getInt("xiaoshou")){
+				if (isNeedValidateFace) {
+					startTakePic();
+				}
+			}else if(0 == jsondata.getInt("xiaoshou")){
+				// http://sieson.whhxrc.com/api/api.mingfa.php/?appv=2.0.5&protocolv=2.0&vars={"oid":"3","uid":"3","store_id":"1","action":"sy_xzxsry"}&version=v2
+				//	这是设置服务人员的接口
+				//	oid  是订单ID   uid是服务人员UID   store_id 是门店ID
+				int len = mAllUidList.size();
+				String []items =new String[len] ;
+				for (int i = 0; i < len; i++) {
+					items[i] =mAllUidList.get(i).getString("real_name");
+				}
+				AlertDialog.Builder builder = new Builder(ConsumeInfoActivity.this);
+				builder.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						try {
+							mSelectedWaiterUid = mAllUidList.get(which).getString("uid");
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				});
+				builder.setPositiveButton("确 定", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						JSONObject vars = new JSONObject();
+						try {
+							vars.put("oid", mOid);
+							vars.put("uid", mSelectedWaiterUid);
+							vars.put("store_id",  ((MyApplication) getApplication()).getStoreId());
+							vars.put("action", "sy_xzxsry");
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						Intent queI = new Intent();
+						queI.putExtra(SiesonService.VARS, vars.toString());
+						queI.setAction(SiesonService.ACTION_GET_WAITER);
+						sendBroadcast(queI);
+					}
+				});
+				builder.setTitle("请选择销售人员");
+				builder.setCancelable(false);
+				builder.create().show();
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -202,34 +331,40 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 
 	private void initUidLists(JSONObject fsxInfo) throws JSONException {
 		JSONArray fsx = fsxInfo.getJSONObject("131").getJSONArray("list");
+		mAllUidList.removeAll(mAllUidList);
 		int len = fsx.length();
 		mFxsUidList.add(defualtFxs);
 		for (int i = 0; i < len; i++) {
 			mFxsUidList.add(fsx.getJSONObject(i));
+			mAllUidList.add(fsx.getJSONObject(i));
 		}
 		JSONArray trs = fsxInfo.getJSONObject("132").getJSONArray("list");
 		len = trs.length();
 		mTrsUidList.add(defualtTrs);
 		for (int i = 0; i < len; i++) {
 			mTrsUidList.add(trs.getJSONObject(i));
+			mAllUidList.add(trs.getJSONObject(i));
 		}
 		JSONArray zl = fsxInfo.getJSONObject("133").getJSONArray("list");
 		len = zl.length();
 		mZlUidList.add(defualtZl);
 		for (int i = 0; i < len; i++) {
 			mZlUidList.add(zl.getJSONObject(i));
+			mAllUidList.add(zl.getJSONObject(i));
 		}
 		JSONArray hjgw = fsxInfo.getJSONObject("134").getJSONArray("list");
 		len = hjgw.length();
 		mHjgwUidList.add(defualtHjgw);
 		for (int i = 0; i < len; i++) {
 			mHjgwUidList.add(hjgw.getJSONObject(i));
+			mAllUidList.add(hjgw.getJSONObject(i));
 		}
 		JSONArray tpds = fsxInfo.getJSONObject("135").getJSONArray("list");
 		len = tpds.length();
 		mTpdsUidList.add(defualtTpds);
 		for (int i = 0; i < len; i++) {
 			mTpdsUidList.add(tpds.getJSONObject(i));
+			mAllUidList.add(tpds.getJSONObject(i));
 		}
 	}
 
@@ -344,13 +479,15 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 		switch (requestCode) {
 		case TAKE_PIC:
 			if (resultCode == RESULT_OK) {
-
 				if (null == dialog) {
 					dialog = new ProgressDialog(ConsumeInfoActivity.this);
+					dialog.setCancelable(false);
 					dialog.setCanceledOnTouchOutside(false);
 				}
 				dialog.show();
 				new FaceVerifyTestTask().execute();
+			}else{
+				finish();
 			}
 			break;
 
@@ -378,12 +515,13 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 		}
 		if(null == dialog){
 			dialog = new ProgressDialog(this);
+			dialog.setCancelable(false);
 			dialog.setCanceledOnTouchOutside(false);
 		}
 		dialog.show();
 		
 		Intent intent = new Intent();
-		intent.setAction(SiesonService.ACTION_COMFIREM_DEPOSIT);
+		intent.setAction(SiesonService.ACTION_COMFIREM_BUY);
 		intent.putExtra(SiesonService.VARS, vars.toString());
 		sendBroadcast(intent);
 	}
@@ -533,6 +671,7 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 						public void onClick(DialogInterface dialog, int which) {
 							if (null == ConsumeInfoActivity.this.dialog) {
 								ConsumeInfoActivity.this.dialog = new ProgressDialog(ConsumeInfoActivity.this);
+								ConsumeInfoActivity.this.dialog.setCancelable(false);
 								ConsumeInfoActivity.this.dialog.setCanceledOnTouchOutside(false);
 							}
 							ConsumeInfoActivity.this.dialog.show();
@@ -549,9 +688,11 @@ public class ConsumeInfoActivity extends Activity implements OnClickListener {
 					});
 					builder.setCancelable(false);
 					builder.create().show();
+				}else{
+					Toast.makeText(ConsumeInfoActivity.this, "认证成功", Toast.LENGTH_SHORT).show();
 				}
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
+//				 TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			// Toast.makeText(ConsumeInfoActivity.this, requestResult,

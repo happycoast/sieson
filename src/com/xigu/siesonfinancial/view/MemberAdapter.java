@@ -44,6 +44,8 @@ public class MemberAdapter extends BaseAdapter {
 		public void validateMember(String username, String uid);
 
 		public void validateMemberrFace(String username, String uid);
+		
+		public void addPic(String uid, int level);
 	}
 
 	public MemberAdapter(Context context, ArrayList<JSONObject> dataList) {
@@ -52,15 +54,15 @@ public class MemberAdapter extends BaseAdapter {
 		this.mDataList = dataList;
 		// validateStatus = ;
 		// TODO
-		options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.ic_launcher) // 设置图片在下载期间显示的图片
-				.showImageForEmptyUri(R.drawable.ic_launcher)// 设置图片Uri为空或是错误的时候显示的图片
-				.showImageOnFail(R.drawable.ic_launcher) // 设置图片加载/解码过程中错误时候显示的图片
+		options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.user_ico) // 设置图片在下载期间显示的图片
+				.showImageForEmptyUri(R.drawable.user_ico)// 设置图片Uri为空或是错误的时候显示的图片
+				.showImageOnFail(R.drawable.user_ico) // 设置图片加载/解码过程中错误时候显示的图片
 				.cacheInMemory(true)// 设置下载的图片是否缓存在内存中
 				.cacheOnDisc(true)// 设置下载的图片是否缓存在SD卡中
 				.considerExifParams(true) // 是否考虑JPEG图像EXIF参数（旋转，翻转）
 				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)// 设置图片以如何的编码方式显示
 				.bitmapConfig(Bitmap.Config.RGB_565)// 设置图片的解码类型//
-				// .decodingOptions(decodingOptions)//设置图片的解码配置
+//				 .decodingOptions(decodingOptions)//设置图片的解码配置
 				// .delayBeforeLoading(int delayInMillis)//int
 				// delayInMillis为你设置的下载前的延迟时间
 				// 设置图片加入缓存前，对bitmap进行设置
@@ -108,7 +110,7 @@ public class MemberAdapter extends BaseAdapter {
 		}
 		try {
 			holder.name.setText(mDataList.get(position).getString("username"));
-			imageLoader.displayImage(mDataList.get(position).getString("avatar"), holder.photo);
+			imageLoader.displayImage(mDataList.get(position).getString("avatar"), holder.photo,options);
 			holder.phone.setText(mDataList.get(position).getString("phone"));
 			holder.type.setText(mDataList.get(position).getString("def_name"));
 
@@ -153,16 +155,16 @@ public class MemberAdapter extends BaseAdapter {
 			// holder.dilever.setVisibility(View.GONE);
 			String toShowStatus = "";
 			holder.upgrade.setVisibility(View.GONE);
-			if ("2".equals(status)) {
+			if ("1".equals(status)) {
 				toShowStatus += "待审核";
 				holder.upgrade.setVisibility(View.VISIBLE);
-			} else if ("1".equals(status)) {
+			} else if ("2".equals(status)){
 				toShowStatus += "已审核";
 			}
 			holder.validate.setVisibility(View.GONE);
 
-			boolean isValidateFace = "null".equals(mDataList.get(position).getString("renlian"));
-			if (!isValidateFace) {
+			boolean isValidatedFace = mDataList.get(position).getBoolean("renlian");
+			if (isValidatedFace) {
 				toShowStatus += "/已通过人脸验证";
 				// holder.upgrade.setText("升级");
 				// holder.upgrade.setOnClickListener(new OnClickListener() {

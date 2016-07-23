@@ -23,6 +23,7 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,8 +39,8 @@ public class MemberManagerActivity extends Activity
 	// public static final String ACTION_VALIDATE_FACE =
 	// "com.siesion.action.ACTION_VALIDATE_FACE";
 	public static final int TYPE_ALL = 0;
-	public static final int TYPE_VALIDATE = 1;
-	public static final int TYPE_UNVALIDATE = 2;
+	public static final int TYPE_VALIDATE = 2;
+	public static final int TYPE_UNVALIDATE = 1;
 	private ArrayList<String> gruops_ids = new ArrayList<String>();
 
 	private ProgressDialog dialog;
@@ -201,7 +202,7 @@ public class MemberManagerActivity extends Activity
 						mAllFrag.getAdapter().setIMemberOprateListener(this);
 					}
 					mAllFrag.getAdapter().notifyDataSetChanged();
-				} else if ("1".equals(status)) {
+				} else if ("2".equals(status)) {
 					if (page > 1) {
 						mValidatedFrag.getDataList().addAll(temp);
 					} else {
@@ -210,7 +211,7 @@ public class MemberManagerActivity extends Activity
 						mValidatedFrag.getAdapter().setIMemberOprateListener(this);
 					}
 					mValidatedFrag.getAdapter().notifyDataSetChanged();
-				} else if ("2".equals(status)) {
+				} else if ("1".equals(status)) {
 					if (page > 1) {
 						mUnValidatedFrag.getDataList().addAll(temp);
 					} else {
@@ -366,21 +367,30 @@ public class MemberManagerActivity extends Activity
 
 			QcloudFrSDK sdk = new QcloudFrSDK(appId, mySign.toString());
 			try {
-				int picLoc = 0;
+//				int picLoc = 0;
 				JSONObject response = null;
 				for (int i = 0; i < 3; i++) {
 
 					String image_path = Environment.getExternalStorageDirectory().getPath() + "/seisonImage"
-							+ "/validate_" + picLoc + ".jpg";
+							+ "/validate_" + i + ".jpg";
 					// JSONObject response = sdk.FaceVerify(image_path,
 					// validateUid);
 					response = sdk.NewPerson(image_path, validateUid, gruops_ids, validateName);
+					Log.d(TAG, response.toString());
 					if (0 == response.getInt("errorcode")) {
 						// TODO
 						// 将服务器返回人脸信息录入数据库
 						add2database(response);
 						break;
 					} else if (-1101 == response.getInt("errorcode")) {
+						continue;
+					} else if (-1302 == response.getInt("errorcode")) {//个体已存在
+						Log.d(TAG, "个体已存在，先尝试删除个体……");
+						if(0 == sdk.DelPerson(validateUid).getInt("errorcode")){
+							Log.d(TAG, "删除个体成功");
+						}else{
+							Log.d(TAG, "删除个体失败 ");
+						}
 						continue;
 					} else {
 						dialog.dismiss();
@@ -541,7 +551,30 @@ public class MemberManagerActivity extends Activity
 		startActivityForResult(intent, REQ_TAKE_PIC);
 	}
 
+	@Override
+	public void addPic(String uid, int level) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	private void showtoast(String msg) {
 		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+	}
+
+	public void back(View view) {
+		if (null != receiver) {
+			unregisterReceiver(receiver);
+			receiver = null;
+		}
+		finish();
+	}
+
+	public void search(View view) {
+		if(!TextUtils.isEmpty(mEtSearch.getEditableText().toString())){
+			querryData(status, mEtSearch.getEditableText().toString(), "1");
+			mEtSearch.getEditableText().clear();
+		}else{
+			showtoast("关键词为空");
+		}
 	}
 }

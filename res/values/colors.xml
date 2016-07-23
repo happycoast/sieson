@@ -80,4 +80,7 @@
 <color name="header">#58567D</color>
 
 <color name="grgray">#686868</color>
+
+<color name="tab_selected">#77000000</color>
+<color name="tab_normal">#FFFFFF</color>
 </resources>

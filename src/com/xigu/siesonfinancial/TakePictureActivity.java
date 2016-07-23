@@ -308,7 +308,9 @@ public class TakePictureActivity extends Activity {
 			} else {
 				mTmpFaces = null;
 			}
-			mCamera.autoFocus(mAutoFocusCallback);
+			if(null != mCamera){
+				mCamera.autoFocus(mAutoFocusCallback);
+			}
 		}
 	};
 	private PictureCallback mPictureCallback = new PictureCallback() {
@@ -327,7 +329,7 @@ public class TakePictureActivity extends Activity {
 				mCamera.startPreview();
 				mCamera.cancelAutoFocus();
 				mHandler.postDelayed(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						mCamera.startFaceDetection();

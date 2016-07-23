@@ -5,13 +5,25 @@
     android:background="@drawable/background"
     android:orientation="vertical" >
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/logo_height"
-        android:layout_gravity="center_horizontal"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/logo_margin_buttom"
-        android:layout_marginTop="@dimen/logo_margin_top"
-        android:src="@drawable/logo2" />
+        android:layout_marginTop="@dimen/logo_margin_top">
+
+        <ImageView
+            android:onClick="back"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/logo_height"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icon9" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/logo_height"
+            android:layout_gravity="center"
+            android:src="@drawable/logo2" />
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="@dimen/finacial_counter_info_width"
@@ -129,6 +141,10 @@
                     android:id="@+id/tv_all"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginTop="1dp"
                     android:clickable="true"
                     android:gravity="center"
                     android:padding="5dp"
@@ -137,12 +153,16 @@
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#77000000" />
+                    android:background="@color/tab_selected" />
 
                 <TextView
                     android:id="@+id/tv_consumed"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginTop="1dp"
                     android:clickable="true"
                     android:gravity="center"
                     android:padding="5dp"
@@ -151,12 +171,16 @@
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="#77000000" />
+                    android:background="@color/tab_selected" />
 
                 <TextView
                     android:id="@+id/tv_unconsumed"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="1dp"
+                    android:layout_marginTop="1dp"
                     android:clickable="true"
                     android:gravity="center"
                     android:padding="5dp"
@@ -180,9 +204,11 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="#000000"
                 android:padding="5dp"
+                android:onClick="search"
+                android:gravity="center"
                 android:text="搜索"
                 android:textColor="#ffffff" />
         </LinearLayout>

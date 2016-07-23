@@ -41,6 +41,8 @@ public class SiesonService extends Service {
 	public static final String ACTION_COMFIREM_DEPOSIT_RESULT = "com.siesion.action.COMFIREM_DEPOSIT_RESULT";
 	public static final String ACTION_COMFIREM_BUY = "com.siesion.action.COMFIREM_BUY";
 	public static final String ACTION_COMFIREM_BUY_RESULT = "com.siesion.action.COMFIREM_BUY_RESULT";
+	public static final String ACTION_GET_WAITER = "com.siesion.action.GET_WAITER";
+	public static final String ACTION_GET_WAITER_RESULT = "com.siesion.action.GET_WAITER_RESULT";
 	// private static final String ADDRESS_QRCODE =
 	// "http://115.28.38.247:8094/index.php/Home/Index/search";
 	private static final String ADDRESS_QRCODE = "http://sieson.whhxrc.com/api/api.mingfa.php/?appv=2.0.5&protocolv=2.0&version=v2";
@@ -53,6 +55,7 @@ public class SiesonService extends Service {
 	public static final int ADD_MEMBER_RESULT = 7;
 	public static final int VALIDATE_MEMBER_RESULT = 8;
 	public static final int COMFIREM_BUY_RESULT = 9;
+	public static final int GET_WAITER_RESULT = 10;
 
 	private ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 	private Handler mHandler = new Handler() {
@@ -85,6 +88,9 @@ public class SiesonService extends Service {
 				break;
 			case COMFIREM_BUY_RESULT:
 				intent.setAction(ACTION_COMFIREM_BUY_RESULT);
+				break;
+			case GET_WAITER_RESULT:
+				intent.setAction(ACTION_GET_WAITER_RESULT);
 				break;
 			default:
 				break;
@@ -125,12 +131,19 @@ public class SiesonService extends Service {
 			if (ACTION_VALIDATE_MEMBER.equals(intent.getAction())) {
 				handleValidateMember(intent);
 			}
+			if (ACTION_GET_WAITER.equals(intent.getAction())) {
+				handleGetWaiter(intent);
+			}
 		}
 	};
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+	}
+
+	protected void handleGetWaiter(Intent intent) {
+		startNetwork(intent.getStringExtra(VARS), GET_WAITER_RESULT);
 	}
 
 	protected void handleComfirmeBuy(Intent intent) {
@@ -188,6 +201,7 @@ public class SiesonService extends Service {
 		intentFilter.addAction(ACTION_COMFIREM_BUY);
 		intentFilter.addAction(ACTION_ADD_MEMBER);
 		intentFilter.addAction(ACTION_VALIDATE_MEMBER);
+		intentFilter.addAction(ACTION_GET_WAITER);
 		registerReceiver(mReceiver, intentFilter);
 		return Service.START_STICKY;
 	}

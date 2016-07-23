@@ -16,11 +16,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class FinancialDataActivity extends Activity implements OnClickListener, IListViewLoadListener {
 	// private static final String TAG = "FinancialDataActivity";
@@ -298,7 +300,6 @@ public class FinancialDataActivity extends Activity implements OnClickListener, 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		unregisterReceiver(receiver);
 	}
 
 	@Override
@@ -306,6 +307,26 @@ public class FinancialDataActivity extends Activity implements OnClickListener, 
 		if (canLoadMore) {
 			page++;
 			querryData(status, searchKey, page + "");
+		}
+	}
+	private void showtoast(String msg) {
+		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+	}
+
+	public void back(View view) {
+		if(null != receiver){
+			unregisterReceiver(receiver);
+			receiver = null;
+		}
+		finish();
+	}
+
+	public void search(View view) {
+		if(!TextUtils.isEmpty(mEtSearch.getEditableText().toString())){
+			querryData(status, mEtSearch.getEditableText().toString(), "1");
+			mEtSearch.getEditableText().clear();
+		}else{
+			showtoast("关键词为空");
 		}
 	}
 }
